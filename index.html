@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennscorer Live - Ostermann Cup</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        
+        .scoreboard-container { background: #222; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        
+        .header { font-size: 12px; color: #888; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        .player-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .player-info { display: flex; flex-direction: column; }
+        .player-name { font-size: 20px; font-weight: bold; text-transform: uppercase; }
+        .player-country { font-size: 12px; color: #aaa; }
+        
+        .sets { display: flex; gap: 8px; }
+        .set-box { background: #333; min-width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 4px; font-weight: bold; font-size: 18px; }
+        .set-active { color: #fff; }
+        
+        .current-game-panel { background: #0b4d21; border: 1px solid #1a8a3d; border-radius: 8px; margin-top: 20px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .game-label { font-size: 10px; color: #8fdfa4; font-weight: bold; }
+        .game-points { font-size: 32px; font-weight: bold; line-height: 1; }
+        .serving-dot { width: 10px; height: 10px; background: #ffcc00; border-radius: 50%; display: inline-block; margin-left: 10px; box-shadow: 0 0 8px #ffcc00; }
+        
+        .status-badge { background: #cc0000; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="scoreboard-container">
+    <div id="tournament-name" class="header">Lade Match-Daten...</div>
+    
+    <div class="player-row">
+        <div class="player-info">
+            <span id="p1-name" class="player-name">-</span>
+            <span class="player-country">SPIELER A</span>
+        </div>
+        <div class="sets">
+            <div id="p1-s1" class="set-box">-</div>
+            <div id="p1-s2" class="set-box">-</div>
+            <div id="p1-s3" class="set-box">-</div>
+        </div>
+    </div>
+
+    <div class="player-row">
+        <div class="player-info">
+            <span id="p2-name" class="player-name">-</span>
+            <span class="player-country">SPIELER B</span>
+        </div>
+        <div class="sets">
+            <div id="p2-s1" class="set-box">-</div>
+            <div id="p2-s2" class="set-box">-</div>
+            <div id="p2-s3" class="set-box">-</div>
+        </div>
+    </div>
+
+    <div class="current-game-panel">
+        <div>
+            <div class="game-label">CURRENT GAME</div>
+            <div id="p1-points" class="game-points">0</div>
+            <div id="p2-points" class="game-points">0</div>
+        </div>
+        <div style="text-align: right;">
+            <div id="serving-indicator" style="display:none;"><span class="game-label">SERVING</span><span class="serving-dot"></span></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAFZSlFEKPt-T8gZoLW4uHc-k4eyHSTMGo",
+        authDomain: "tennscorer.firebaseapp.com",
+        projectId: "tennscorer",
+        storageBucket: "tennscorer.firebasestorage.app",
+        messagingSenderId: "351765952844",
+        appId: "1:351765952844:web:3b285053f4b3395076b7e9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Hier wird das Dokument "Ostermann_finale_damen" live überwacht
+    const matchRef = doc(db, "match_cloud", "Ostermann_finale_damen");
+
+    onSnapshot(matchRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Namen & Turnier
+            document.getElementById('tournament-name').innerText = (data.tournamentName || "Match") + " • LIVE";
+            document.getElementById('p1-name').innerText = data.player_a || "Spieler A";
+            document.getElementById('p2-name').innerText = data.player_b || "Spieler B";
+
+            // Punkte im aktuellen Game (angenommen die Felder heißen 'points_a' und 'points_b')
+            document.getElementById('p1-points').innerText = data.points_a ?? "0";
+            document.getElementById('p2-points').innerText = data.points_b ?? "0";
+
+            // Satz-Ergebnisse (angenommen die Felder heißen 'set1_a', etc.)
+            document.getElementById('p1-s1').innerText = data.set1_a ?? "-";
+            document.getElementById('p2-s1').innerText = data.set1_b ?? "-";
+            document.getElementById('p1-s2').innerText = data.set2_a ?? "-";
+            document.getElementById('p2-s2').innerText = data.set2_b ?? "-";
+            document.getElementById('p1-s3').innerText = data.set3_a ?? "-";
+            document.getElementById('p2-s3').innerText = data.set3_b ?? "-";
+        } else {
+            document.getElementById('tournament-name').innerText = "Warten auf Spielstart...";
+        }
+    });
+</script>
+</body>
+</html>
