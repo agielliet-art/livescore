@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tennscorer Dashboard - Pro</title>
+    <title>Tennscorer Dashboard - Pro 4er</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
@@ -86,6 +86,60 @@
         </div>
         <div class="ticker" id="t2_log">Lade Daten...</div>
     </div>
+
+    <div class="card">
+        <div class="match-header"><span id="t3_name">Match 3</span><span class="duration" id="t3_time">00:00:00</span></div>
+        <div class="score-area">
+            <div class="player-row">
+                <div class="name-box"><div id="t3_dot_a" class="serv-dot"></div><span id="t3_p1">-</span></div>
+                <div class="sets">
+                    <div id="t3_s1_a" class="s-box">0</div>
+                    <div id="t3_s2_a" class="s-box s-empty">0</div>
+                    <div id="t3_s3_a" class="s-box s-empty">0</div>
+                </div>
+            </div>
+            <div class="game-display">
+                <div class="pts-label">POINTS</div>
+                <div class="pts"><span id="t3_pts_a">0</span> : <span id="t3_pts_b">0</span></div>
+            </div>
+            <div class="player-row">
+                <div class="name-box"><div id="t3_dot_b" class="serv-dot"></div><span id="t3_p2">-</span></div>
+                <div class="sets">
+                    <div id="t3_s1_b" class="s-box">0</div>
+                    <div id="t3_s2_b" class="s-box s-empty">0</div>
+                    <div id="t3_s3_b" class="s-box s-empty">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="ticker" id="t3_log">Lade Daten...</div>
+    </div>
+
+    <div class="card">
+        <div class="match-header"><span id="t4_name">Match 4</span><span class="duration" id="t4_time">00:00:00</span></div>
+        <div class="score-area">
+            <div class="player-row">
+                <div class="name-box"><div id="t4_dot_a" class="serv-dot"></div><span id="t4_p1">-</span></div>
+                <div class="sets">
+                    <div id="t4_s1_a" class="s-box">0</div>
+                    <div id="t4_s2_a" class="s-box s-empty">0</div>
+                    <div id="t4_s3_a" class="s-box s-empty">0</div>
+                </div>
+            </div>
+            <div class="game-display">
+                <div class="pts-label">POINTS</div>
+                <div class="pts"><span id="t4_pts_a">0</span> : <span id="t4_pts_b">0</span></div>
+            </div>
+            <div class="player-row">
+                <div class="name-box"><div id="t4_dot_b" class="serv-dot"></div><span id="t4_p2">-</span></div>
+                <div class="sets">
+                    <div id="t4_s1_b" class="s-box">0</div>
+                    <div id="t4_s2_b" class="s-box s-empty">0</div>
+                    <div id="t4_s3_b" class="s-box s-empty">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="ticker" id="t4_log">Lade Daten...</div>
+    </div>
 </div>
 
 <script>
@@ -103,15 +157,12 @@
         document.getElementById(prefix+'p1').innerText = d.player_a || "P1";
         document.getElementById(prefix+'p2').innerText = d.player_b || "P2";
         
-        // Punkte (0, 15, 30, 40)
         document.getElementById(prefix+'pts_a').innerText = d.points_a || "0";
         document.getElementById(prefix+'pts_b').innerText = d.points_b || "0";
         
-        // Spiele pro Satz (1-6)
         document.getElementById(prefix+'s1_a').innerText = d.set1_a || "0";
         document.getElementById(prefix+'s1_b').innerText = d.set1_b || "0";
         
-        // Satz 2 & 3 Boxen stylen (nur hell, wenn Daten da sind)
         if(d.set2_a !== undefined) {
             document.getElementById(prefix+'s2_a').innerText = d.set2_a;
             document.getElementById(prefix+'s2_b').innerText = d.set2_b;
@@ -144,8 +195,11 @@
         }, 1000);
     }
 
+    // --- HIER DIE IDs DEINER FIREBASE DOKUMENTE EINTRAGEN ---
     db.collection("match_cloud").doc("Ostermann_finale_damen").onSnapshot(doc => updateMatch(doc.data(), 't1_'));
     db.collection("match_cloud").doc("Ostermann_finale_herren").onSnapshot(doc => updateMatch(doc.data(), 't2_'));
+    db.collection("match_cloud").doc("DEINE_ID_3").onSnapshot(doc => updateMatch(doc.data(), 't3_'));
+    db.collection("match_cloud").doc("DEINE_ID_4").onSnapshot(doc => updateMatch(doc.data(), 't4_'));
 </script>
 </body>
 </html>
